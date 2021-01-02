@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
+      .wrap {
+        width: 1226px;
+        height: 460px;
+        margin: 0 auto;
+        position: relative;
+      }
+
+      .list {
+        width: 1226px;
+        height: 460px;
+
+        text-align: center;
+        list-style: none;
+        font-size: 40px;
+        position: relative;
+      }
+      .item {
+        width: 100%;
+        height: 100%;
+        color: red;
+        position: absolute;
+        opacity: 0;
+        transition: all 0.5s;
+      }
+
+      /* 通过控制active类来显示对应的图片 */
+      .item.active {
+        z-index: 10;
+        /* 透明度 */
+        opacity: 1;
+      }
+
+      .btn {
+        width: 30px;
+        height: 50px;
+        font-size: 25px;
+        color: #d3d3d3;
+        z-index: 100;
+        cursor: pointer;
+        /* 按钮设置透明 */
+        /* opacity: 0.7; */
+        background-color: rgba(0, 0, 0, 0.1);
+        border-radius: 10%;
+        border-style: none;
+        /* 去除点击后的边框 */
+        outline-style: none;
+      }
+      .btn:hover {
+        background-color: rgba(0, 0, 0, 0.4);
+        color: white;
+      }
+      #left {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+      #right {
+        position: absolute;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+      }
+
+      /* 轮播图点 */
+      .pointList {
+        padding-left: 0;
+        list-style: none;
+        position: absolute;
+        right: 40px;
+        bottom: 30px;
+        z-index: 1000;
+        cursor: pointer;
+      }
+      .point {
+        width: 6px;
+        height: 6px;
+        float: left;
+        background-color: rgba(0, 0, 0, 0.4);
+        border-radius: 100%;
+        margin-right: 8px;
+        border: 2px solid rgba(255, 255, 255, 0.842);
+      }
+      .point:hover {
+        background-color: rgba(255, 255, 255, 0.8);
+      }
+
+      .point.active {
+        background-color: rgba(255, 255, 255, 0.8);
+      }
+
+      .item:nth-child(1) {
+        background-color: antiquewhite;
+      }
+      .item:nth-child(2) {
+        background-color: rebeccapurple;
+      }
+      .item:nth-child(3) {
+        background-color: pink;
+      }
+      .item:nth-child(4) {
+        background-color: salmon;
+      }
+      .item:nth-child(5) {
+        background-color: aqua;
+      }
+
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <ul class="list">
+        <li class="item active"><img src="./img/1.jpg" alt="" /></li>
+        <li class="item"><img src="./img/2.jpg" alt="" /></li>
+        <li class="item"><img src="./img/3.jpg" alt="" /></li>
+        <li class="item"><img src="./img/4.jpg" alt="" /></li>
+        <li class="item"><img src="./img/5.jpg" alt="" /></li>
+      </ul>
+      <ul class="pointList">
+        <!-- html5中在标签里存数据 data-index 方便识别是第几个轮播点 -->
+        <li class="point active" data-index="0"></li>
+        <li class="point" data-index="1"></li>
+        <li class="point" data-index="2"></li>
+        <li class="point" data-index="3"></li>
+        <li class="point" data-index="4"></li>
+      </ul>
+      <button type="button" class="btn" id="left"><</button>
+      <button type="button" class="btn" id="right">></button>
+    </div>
+  </body>
+  <script>
+    var items = document.getElementsByClassName("item"); //图片
+    var btn_left = document.getElementById("left"); //按钮
+    var btn_right = document.getElementById("right");
+    var pointItems = document.getElementsByClassName("point"); //轮播图点
+
+    var index = 0; //表示第几张图片在展示，第几张图片有active这个类名
+    var time = 0; //轮播图自动播放控制
+
+    var clearActive = function () {
+      for (let i = 0; i < items.length; i++) {
+        // 把所有图片li的active类去掉
+        items[i].className = "item";
+        // 把所有图片点li的active类去掉
+        pointItems[i].className = "point";
+      }
+    };
+
+    var goIndex = function () {
+      clearActive(); //清除所有li的active类
+      items[index].className = "item active"; //显示想要的
+      pointItems[index].className = "point active";
+      time = 0;//这里设置优化防止刚点击完到下一张图片就立马再跳转到下一张
+    };
+
+    // 轮播图点击跳转事件
+    var goNext = function () {
+      if (index < 4) {
+        index++;
+      } else {
+        index = 0;
+      }
+      goIndex();
+    };
+
+    var goLastOne = function () {
+      if (index === 0) {
+        index = 4;
+      } else {
+        index--;
+      }
+      goIndex();
+    };
+
+    // 注册按钮点击事件
+    btn_right.addEventListener("click", () => {
+      goNext();
+    });
+
+    btn_left.addEventListener("click", () => {
+      goLastOne();
+    });
+
+    //注册轮播图点的点击事件
+    for (let i = 0; i < pointItems.length; i++) {
+      pointItems[i].addEventListener("click", () => {
+        // let pointIndex = pointItems[i].getAttribute("data-index");
+        // console.log(pointIndex);
+        index = i;
+        // console.log(index);
+        goIndex();
+      });
+    }
+
+    // 设置轮播图自动跳转定时器
+    setInterval(() => {
+      time++;
+      if (time === 20) {//每两毫秒跳转到下一张
+        goNext();
+        time = 0;
+      }
+    }, 100);
+  </script>
+</html>
